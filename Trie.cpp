@@ -172,31 +172,4 @@ public:
     }
 };
 
-int main() {
-    Trie trie;
 
-    trie.insert("apple");
-    trie.insert("app");
-    trie.insert("apply");
-
-    cout << "Frequency of 'apple': " << trie.getFrequency("apple") << endl;
-    cout << "Frequency of 'app': " << trie.getFrequency("app") << endl;
-
-    auto suggestions = trie.getSuggestions("app");
-    cout << "\nSuggestions for 'app':\n";
-    for (auto &p : suggestions) {
-        cout << p.first << " (freq: " << p.second << ")\n";
-    }
-
-    auto corrections = trie.getCorrections("appl", 1);
-    cout << "\nSpell check suggestions for 'appl' (max edit distance 1):\n";
-    for (auto &p : corrections) {
-        cout << p.first << " (freq: " << p.second << ")\n";
-    }
-
-    cout << "\nDeleting 'apple'...\n";
-    trie.remove("apple");
-    cout << "Search 'apple': " << (trie.search("apple") ? "Found" : "Not Found") << endl;
-
-    return 0;
-}
