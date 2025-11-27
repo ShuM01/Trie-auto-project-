@@ -45,7 +45,7 @@ private:
             int insertCost = currRow[i - 1] + 1;
             int deleteCost = prevRow[i] + 1;
             int replaceCost = prevRow[i - 1] + (word[i - 1] != current.back());
-            currRow[i] = min({insertCost, deleteCost, replaceCost});
+            currRow[i] = min(insertCost, min(deleteCost, replaceCost));
         }
 
         if (node->isEndOfWord && currRow[n] <= maxEdits)
@@ -59,6 +59,37 @@ private:
                 }
             }
         }
+    }
+
+    // Recursive helper for delete
+    bool deleteWord(TrieNode* node, const string &word, int depth) {
+        if (!node) return false;
+
+        if (depth == word.size()) {
+            if (!node->isEndOfWord) return false; // word not found
+            node->isEndOfWord = false;
+            node->frequency = 0;
+
+            // check if node has no children
+            for (int i = 0; i < 26; i++) {
+                if (node->children[i]) return false;
+            }
+            return true; // signal to delete this node
+        }
+
+        int index = word[depth] - 'a';
+        if (deleteWord(node->children[index], word, depth + 1)) {
+            delete node->children[index];
+            node->children[index] = nullptr;
+
+            if (!node->isEndOfWord) {
+                for (int i = 0; i < 26; i++) {
+                    if (node->children[i]) return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
 public:
@@ -135,6 +166,10 @@ public:
 
         return results;
     }
+
+    void remove(const string &word) {
+        deleteWord(root, word, 0);
+    }
 };
 
 int main() {
@@ -142,9 +177,7 @@ int main() {
 
     trie.insert("apple");
     trie.insert("app");
-    trie.insert("apple");
     trie.insert("apply");
-    trie.insert("app");
 
     cout << "Frequency of 'apple': " << trie.getFrequency("apple") << endl;
     cout << "Frequency of 'app': " << trie.getFrequency("app") << endl;
@@ -160,6 +193,11 @@ int main() {
     for (auto &p : corrections) {
         cout << p.first << " (freq: " << p.second << ")\n";
     }
+
+    // Test delete
+    cout << "\nDeleting 'apple'...\n";
+    trie.remove("apple");
+    cout << "Search 'apple': " << (trie.search("apple") ? "Found" : "Not Found") << endl;
 
     return 0;
 }
