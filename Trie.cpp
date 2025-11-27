@@ -61,8 +61,8 @@ private:
         }
     }
 
-    // Recursive helper for delete
-    bool deleteWord(TrieNode* node, const string &word, int depth) {
+    // Recursive helper for delete (fixed with size_t depth)
+    bool deleteWord(TrieNode* node, const string &word, size_t depth) {
         if (!node) return false;
 
         if (depth == word.size()) {
@@ -144,7 +144,7 @@ public:
         collectWords(current, prefix, result);
 
         sort(result.begin(), result.end(),
-             [](auto &a, auto &b){ return a.second > b.second; });
+             [](const pair<string,int> &a, const pair<string,int> &b){ return a.second > b.second; });
 
         return result;
     }
@@ -162,7 +162,7 @@ public:
         }
 
         sort(results.begin(), results.end(),
-             [](auto &a, auto &b){ return a.second > b.second; });
+             [](const pair<string,int> &a, const pair<string,int> &b){ return a.second > b.second; });
 
         return results;
     }
@@ -194,7 +194,6 @@ int main() {
         cout << p.first << " (freq: " << p.second << ")\n";
     }
 
-    // Test delete
     cout << "\nDeleting 'apple'...\n";
     trie.remove("apple");
     cout << "Search 'apple': " << (trie.search("apple") ? "Found" : "Not Found") << endl;
